@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot.caoqing.mapper.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.springboot.caoqing.bean.Role" >
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="role_create_time" property="roleCreateTime" jdbcType="TIMESTAMP" />
+    <result column="role_description" property="roleDescription" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    /*role_id, role_name*/
+    role_id,role_name,role_create_time,role_description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from role
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.springboot.caoqing.bean.Role" >
+    insert into role (Role_id, Role_name, Role_create_time, 
+      Role_description)
+    values (#{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, #{roleCreateTime,jdbcType=TIMESTAMP}, 
+      #{roleDescription,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.springboot.caoqing.bean.Role" >
+    insert into role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        Role_id,
+      </if>
+      <if test="roleName != null" >
+        Role_name,
+      </if>
+      <if test="roleCreateTime != null" >
+        Role_create_time,
+      </if>
+      <if test="roleDescription != null" >
+        Role_description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleName != null" >
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleCreateTime != null" >
+        #{roleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="roleDescription != null" >
+        #{roleDescription,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!--查询可看到领料申请单权限的数据-->
+  <select id="findRoleByModele" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT
+        r.role_id AS role_id,r.role_name AS role_name,r.role_create_time AS role_create_time,r.role_description AS role_description
+    FROM
+        module AS m
+    LEFT JOIN module_handle AS mh ON m.module_id = mh.module_id
+    LEFT JOIN role AS r ON mh.role_id = r.role_id
+    LEFT JOIN data_range as dr on dr.role_id = r.role_id
+
+    where m.module_name = #{moduleName,jdbcType=VARCHAR}
+  </select>
+</mapper>
